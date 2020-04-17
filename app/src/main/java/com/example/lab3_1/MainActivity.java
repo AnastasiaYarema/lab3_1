@@ -3,16 +3,40 @@ package com.example.lab3_1;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+
+    private PopupWindow popupWindow;
+    private LayoutInflater layoutInflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+    }
+
+    protected void showResult(double start, double end, int count, long num, long a, View v) {
+        TextView timeText = (TextView) findViewById(R.id.TimeResult);
+        TextView countText = (TextView) findViewById(R.id.CountResult);
+
+        String finalTime = new Double(end - start).toString();
+        timeText.setText("Час обрахунку:\n" + finalTime);
+        countText.setText("Кількість ітерацій:\n" + count);
+
+        layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        ViewGroup container = (ViewGroup) layoutInflater.inflate(R.layout.popupwindow, null);
+
+        popupWindow = new PopupWindow(container, 600, 200, true);
+        ((TextView)popupWindow.getContentView().findViewById(R.id.resultCount)).setText("Кількість ітерацій:\n" + count);
+        popupWindow.showAtLocation(v, Gravity.NO_GRAVITY, 300, 300);
     }
 
     public void onButtonClick(View v) {
@@ -32,11 +56,9 @@ public class MainActivity extends AppCompatActivity {
         int count = 0;
 
         if (a * a == num) {
-            resultText.setText("√" + num + "\n[ " + a + ", " + a + " ]");
             end = System.nanoTime();
-            String finalTime = new Double(end - start).toString();
-            timeText.setText("Час обрахунку:\n" + finalTime);
-            countText.setText("Кількість ітерацій:\n" + count);
+            resultText.setText("√" + num + "\n[ " + a + ", " + a + " ]");
+            showResult(start, end, count, num, a, v);
 
             return;
         }
@@ -44,9 +66,8 @@ public class MainActivity extends AppCompatActivity {
         if ((num & 1) == 0) {
             resultText.setText("Число є парним\n[ " + num / 2 + ", " + 2 + " ]");
             end = System.nanoTime();
-            String finalTime = new Double(end - start).toString();
-            timeText.setText("Час обрахунку:\n" + finalTime);
-            countText.setText("Кількість ітерацій:\n" + count);
+            showResult(start, end, count, num, a, v);
+
             return;
         }
 
@@ -62,9 +83,8 @@ public class MainActivity extends AppCompatActivity {
         }
         end = System.nanoTime();
         resultText.setText("[ " + (a - b) + ", " + (a + b) + " ]");
-        String finalTime = new Double(end - start).toString();
-        timeText.setText("Час обрахунку:\n" + finalTime);
-        countText.setText("Кількість ітерацій:\n" + count);
+        showResult(start, end, count, num, a, v);
+
         return;
     }
 
